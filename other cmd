@@ -1,0 +1,164 @@
+--------------------
+
+刷新DNS缓存
+ipconfig /flushdns
+
+查询域名的ip
+nslookup baidu.com
+
+set port=9003
+for /f "tokens=2,4,5"  %%1 in ('netstat -ano ^| findstr "0.0.0.0:%port% "') do call TASKKILL /F /PID %%3
+
+netstat -ano|findstr "0.0.0.0:8080"
+
+强制删除
+del /F /S /Q "D:\lib-demo\2.1"
+
+rd /F /S /Q "D:\sw\tool\Beyond Compare\BCShellEx64.dll"
+
+启动计算机管理
+compmgmt.msc
+现在前端代码分拆后，需要在平级目录放一份node_modules，更新不方便。
+可以在container目录下npm install，然后在上级目录创建软连接的方式，无需再拷贝
+具体命令示例如下：
+目标   源
+mklink /D E:\study\node_modules  E:\study\mysql-mapper\node_modules
+
+服务器添加管理员
+net localgroup administrators DOMIAN\123456 /add
+
+
+--------------------
+30 0 * * * /home/data/start/log_clean.sh > /home/data/start/clean.log
+30 0 * * * /data/publish/log_clean.sh
+
+crontab -e 编辑，i开始编辑，esc结束编辑 :wq保存退出
+crontab -l 查看
+
+-------------------------
+安装
+tar xzf redis-3.2.9.tar.gz
+cd redis-3.2.9
+make
+cd /data/redis-3.2.9/src
+./redis-server ./redis.conf  #启动服务
+#启动客户端   --raw 支持中文
+./redis-cli -h 127.0.0.1 -p 6379 -a mypasswd  --raw
+
+关闭
+./redis-cli -h 127.0.0.1 -p 6379 -a mypasswd shutdown
+./redis-cli -h 127.0.0.1 -p 6379 shutdown
+注释掉bind 127.0.0.1可以使所有的ip访问redis。在redis3.2之后，redis增加了protected-mode，在这个模式下，
+即使注释掉了bind 127.0.0.1，再访问redisd时候还是报错。需要同时修改：protected-mode no
+设置密码：requirepass 
+
+如果是用apt-get或者yum install安装的redis，可以直接通过下面的命令停止/启动/重启redis
+
+/etc/init.d/redis-server stop
+/etc/init.d/redis-server start
+/etc/init.d/redis-server restart
+
+查看所有key
+keys *
+根据完整的key值删除记录
+del key  
+查询缓存内容
+get key
+select 0 选择数据库0
+flushall ——> 清空整个 Redis 服务器的数据(删除所有数据库的所有 key )
+
+flushdb ——> 清空当前数据库中的所有 key
+
+-----------------------------------------
+支持https和http2
+cd /usr/local
+tar -xzvf openssl-1.0.2p.tar.gz
+tar -xzvf openresty-1.9.7.5.tar.gz
+cd openresty-1.9.7.5
+./configure --with-openssl=../openssl-1.0.2p --with-http_v2_module
+make 
+make install
+
+--------------------------------
+查询npm所有配置
+npm config list -l
+
+设置全局安装路径
+npm config set prefix "/data/sw/nodejs"
+npm config set registry "https://mirror.npmjs.com"
+
+----------------------------------------
+nginx常用命令
+启动：
+cd /usr/local/nginx/sbin
+./nginx
+nginx服务启动后默认的进程号会放在/usr/local/nginx/logs/nginx.pid文件
+cat nginx.pid 查看进程号关闭：
+kill -TERM pid  快速停止服务
+kill -QUIT pid  平缓停止服务
+kill -9 pid     强制停止服务重启：
+cd /usr/local/nginx
+./nginx -HUP pid
+./nginx -s reload另外一些常见的命令：
+./nginx -h 查看nginx所有的命令参数
+Options:
+  -?,-h         : this help
+  -v            : show version and exit
+  -V            : show version and configure options then exit
+  -t            : test configuration and exit
+  -T            : test configuration, dump it and exit
+  -q            : suppress non-error messages during configuration testing
+  -s signal     : send signal to a master process: stop, quit, reopen, reload
+  -p prefix     : set prefix path (default: /usr/local/nginx/)
+  -c filename   : set configuration file (default: conf/nginx.conf)
+  -g directives : set global directives out of configuration file
+
+./nginx -v  显示nginx的版本号
+./nginx -V  显示nginx的版本号和编译信息
+./nginx -t  检查nginx配置文件的正确性
+./nginx -t  检查nginx配置文件的正确定及配置文件的详细配置内容
+./nginx -s  向主进程发送信号，如:./nginx -s reload 配置文件变化后重新加载配置文件并重启nginx服务
+./nginx -p  设置nginx的安装路径
+./nginx -c  设置nginx配置文件的路径
+
+--------------------------
+查看event是否开启
+show variables like '%sche%'; 
+
+将事件计划开启
+set global event_scheduler =1;
+
+配置文件，默认安装在/etc/my.cnf
+
+1、使用 service 启动：service mysqld start
+重启 restart  ，关闭 stop
+
+2、使用 mysqld 脚本启动：/etc/inint.d/mysqld start
+
+生成UUID   select REPLACE(UUID(),'-','')
+
+service mysqlrouter restart
+
+mysql-router:
+mysqlrouter --bootstrap root@10.1.1.1:3306 --user=mysqlrouter
+
+-----------------------
+mvn clean package -Dmaven.test.skip=true -Pprod
+
+mvn clean package -DskipTests -Pprod
+
+--------------------------
+
+安装
+解压tar -xzvf  kafka_2.12-0.11.0.0.tgz
+修改config/server.properties
+listeners=PLAINTEXT://10.1.1.1:9092
+
+cd /data/sw/kafka_2.12-0.11.0.0
+
+首先启动zk; 
+bin/zookeeper-server-stop.sh
+(bin/zookeeper-server-start.sh config/zookeeper.properties &)
+启动kafka服务; 
+bin/kafka-server-stop.sh
+(bin/kafka-server-start.sh config/server.properties&)
