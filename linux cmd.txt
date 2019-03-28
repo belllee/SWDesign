@@ -1,0 +1,568 @@
+查询操作系统
+cat /proc/version
+uname -a
+###查询磁盘空间大小
+du -sh : 查看当前目录总共占的容量。而不单独列出各子项占用的容量 
+###查询当前目录下个文件夹大小
+du -h --max-depth=1
+du -lh --max-depth=1 : 查看当前目录下一级子文件和子目录占用的磁盘容量。
+
+df -hl  显示格式为：　文件系统 容量 已用 可用 已用% 挂载点　
+
+根据pid=123，查询进程信息
+ll /proc/123
+cat /proc/123/status 
+strace -p14722 -s9999 -e write03
+根据PID=14131，打印进行
+
+根据pid查询app具体信息
+ls -l /proc/18283
+
+###删除目录
+rm -rf 
+
+查看 date
+1、先设置日期
+	date -s 20181203
+2、设置时间
+	date -s 09:50:00
+３、如果要同时更改BIOS时间
+	在执行clock -w
+
+# 总核数 = 物理CPU个数 X 每颗物理CPU的核数 
+# 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数
+
+# 查看物理CPU个数
+cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l
+
+# 查看每个物理CPU中core的个数(即核数)
+cat /proc/cpuinfo| grep "cpu cores"| uniq
+
+# 查看逻辑CPU的个数
+cat /proc/cpuinfo| grep "processor"| wc -l
+
+#查询内存
+free
+
+卸载openjdk
+rpm -qa | grep java
+rpm -e --nodeps java-1.5.0-gcj-1.5.0.0-29.1.el6.x86_64
+rpm -e --nodeps java-1.6.0-openjdk-1.6.0.0-1.66.1.13.0.el6.x86_64
+rpm -e --nodeps java-1.7.0-openjdk-1.7.0.45-2.4.3.3.el6.x86_64
+rpm -e --nodeps java-1.8.0-openjdk-devel-1.8.0.101-3.b13.el7_2.x86_64
+rpm -e --nodeps java-1.8.0-openjdk-headless-1.8.0.101-3.b13.el7_2.x86_64
+rpm -e --nodeps java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2.x86_64
+
+安装JDK
+rpm -ivh jdk-8u131-linux-x64.rpm
+yum install java-1.8.0-openjdk-devel
+
+vi /etc/locale.conf
+##加下面内容到第一行，设置中文
+LANG=zh_CN.UTF8
+
+安装pcre
+tar -zxvf pcre-8.39.tar.gz
+#//chmod -R 777 pcre-8.39 
+cd pcre-8.39
+./configure
+make 
+make install
+ln -s /usr/local/lib/libpcre.so.1  /lib
+ln -s /usr/local/lib/libpcre.so.1  /lib64
+
+
+安装openrestry
+tar -xzvf openresty-1.9.7.5.tar.gz
+cd openresty-1.9.7.5
+./configure
+make
+make install
+
+
+安装nginx
+tar -xzvf  nginx-1.10.3.tar.gz
+cd nginx-1.10.3
+./configure
+make
+make install
+
+安装和使用pinpoint agent
+新建pp-agent目录，把压缩包拷贝到此目录
+tar -xzvf pinpoint-agent-1.7.3.tar.gz
+修改pinpoint.config文件，主要改：服务端ip（profiler.collector.ip）和采样频率（profiler.sampling.rate）
+执行如下命令就可以监控服务了
+(java -javaagent:/data/sw/pp-agent/pinpoint-bootstrap-1.7.3.jar -Dpinpoint.agentId=demo_1 -Dpinpoint.applicationName=demo -jar /data/publish/demo-1.0.jar&)
+
+安装telnet client和server
+yum install telnet
+yum install telnet-server
+
+编辑 /etc/profile文件，文件结尾增加
+export PATH=/usr/local/node-v8.9.0-linux-x64/bin:$PATH
+马上生效
+source /etc/profile
+
+安装zabbix
+cd /data/sw
+rpm -ivh libtool-ltdl-2.2.6-15.5.el6.x86_64.rpm
+rpm -ivh unixODBC-2.2.14-14.el6.x86_64.rpm
+rpm -ivh zabbix-agent-3.0.2-1.el6.x86_64.rpm
+
+
+rpm 执行安装包
+二进制包（Binary）以及源代码包（Source）两种。二进制包可以直接安装在计算机中，而源代码包将会由RPM自动编译、安装。源代码包经常以src.rpm作为后缀名。
+常用命令组合：
+－ivh：安装显示安装进度--install--verbose--hash
+－Uvh：升级软件包--Update；
+－qpl：列出RPM软件包内的文件信息[Query Package list]；
+－qpi：列出RPM软件包的描述信息[Query Package install package(s)]；
+－qf：查找指定文件属于哪个RPM软件包[Query File]；
+－Va：校验所有的RPM软件包，查找丢失的文件[View Lost]；
+－e：删除包
+
+
+配置文件：
+/etc/zabbix/zabbix_agentd.d/
+/etc/zabbix/zabbix_scripts.d/
+/etc/zabbix/zabbix_agentd.conf
+++++++++++++++++++++
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+EnableRemoteCommands=1
+LogRemoteCommands=1
+Server=10.1.1.1
+ServerActive=10.1.1.1
+ListenPort=10050
+Hostname=pub_web
+HostMetadata=pub_web_linux_idc
+Timeout=8
+AllowRoot=1
+Include=/etc/zabbix/zabbix_agentd.d/*.conf
+UnsafeUserParameters=1
++++++++++++++++++++++++++++++++
+chkconfig zabbix-agent on
+service zabbix-agent start
+service zabbix-agent restart
+
+
+linux 之间拷贝文件
+scp node-v6.11.0-linux-x64.tar.xz 10.1.1.8:/data/file/
+压缩和解压缩文件
+tar命令
+xz -d aaa.xz
+　　解包：tar zxvf uploadbak.tar
+
+　　打包：tar czvf uploadbak.tar /home/filebak/uploadbak
+
+tar zxvf nginx-1.10.3.tar.gz
+
+移动文件夹内的内容
+mv /data/data/*  /data/
+
+复制模糊匹配的文件夹内的文件
+cp -r /data/tomcat-8.5.8/webapps/upload/file/2017*  /data/upload/file
+
+查询目录下文件数量
+find /data//upload/video/2017* -type f | wc -l
+
+修改计算机名
+修改/etc/sysconfig/network   修改这个文件，系统才有效
+    /etc/hosts       hostname 命令读这个配置文件
+	
+	
+如何解决SSH连接Linux超时自动断开？
+
+修改 /etc/profile
+TMOUT=900 # 将以上900修改为0就是设置不超时
+source /etc/profile
+
+修改文件 /etc/ssh/sshd_config中关于客户端活动状态的配置
+ClientAliveInterval 60
+ClientAliveCountMax 3
+然后重启服务
+service sshd reload
+
+解决输入用户名后，等待输入密码事件太长
+/etc/ssh/sshd_config 
+修改GSSAPIAuthentication参数为 no，默认是yes
+增加UseDNS no 
+
+目录软连接
+源  目标
+ln -s /data/file/20161102 /data1/file/20161102
+
+根据端口号杀进程
+kill `lsof -t -i:8080`
+
+
+tar -zxvf  tigervnc-1.8.0.x86_64.tar.gz
+启动，注意防火墙要关闭
+cd /home/sw/tigervnc-1.8.0.x86_64/usr/bin
+./vncserver :1   端口是5901  :2 端口是5902
+./vncserver -list 
+./vncserver -kill :1
+执行 vncpasswd 可以修改密码
+cd /home1/sw/tigervnc-1.8.0.x86_64/usr/bin
+cd /data/sw/tigervnc-1.8.0.x86_64/usr/bin
+
+防火墙设置
+配置文件  /etc/sysconfig/iptables
+重启防火墙 service iptables restart
+
+RPM 安装操作
+rpm -i 需要安装的包文件名 
+举例如下： 
+rpm -i example.rpm 安装 example.rpm 包； 
+rpm -iv example.rpm 安装包并在安装过程中显示正在安装的文件信息； 
+rpm -ivh example.rpm 安装包并在安装过程中显示正在安装的文件信息及安装进度； 
+
+RPM 查询操作
+rpm -q … 
+
+附加查询命令：
+a 查询所有已经安装的包以下两个附加命令用于查询安装包的信息； 
+i 显示安装包的信息； 
+l 显示安装包中的所有文件被安装到哪些目录下；
+s 显示安装版中的所有文件状态及被安装到哪些目录下；以下两个附加命令用于指定需要查询的是安装包还是已安装后的文件；
+p 查询的是安装包的信息； 
+f 查询的是已安装的某文件信息；
+举例如下： 
+rpm -qa | grep tomcat4 查看 tomcat4 是否被安装； 
+rpm -qip example.rpm 查看 example.rpm 安装包的信息；
+rpm -qif /bin/df 查看/bin/df 文件所在安装包的信息； 
+rpm -qlf /bin/df 查看/bin/df 文件所在安装包中的各个文件分别被安装到哪个目录下；
+ 
+RPM 卸载操作 
+rpm -e 需要卸载的安装包 
+在卸载之前，通常需要使用rpm -q …命令查出需要卸载的安装包名称。 
+举例如下： 
+rpm -e tomcat4 卸载 tomcat4 软件包 
+
+RPM 升级操作
+rpm -U 需要升级的包 
+
+举例如下： 
+
+rpm -Uvh example.rpm 升级 example.rpm 软件包 
+
+RPM 验证操作
+rpm -V 需要验证的包 
+
+举例如下：
+rpm -Vf /etc/tomcat4/tomcat4.conf 
+
+输出信息类似如下： 
+S.5....T c /etc/tomcat4/tomcat4.conf 
+其中，S 表示文件大小修改过，T 表示文件日期修改过。限于篇幅，更多的验证信息请您参考rpm 帮助文件：man rpm 
+
+RPM 的其他附加命令
+--force 强制操作 如强制安装删除等； 
+--requires 显示该包的依赖关系； 
+--nodeps 忽略依赖关系并继续操作
+
+
+开机启动
+修改 
+vi /etc/rc.d/rc.local 
+注意设置可执行权限，
+chmod g+x /etc/rc.d/rc.local
+chmod g+x /data/publish/start/redis.sh
+
+增加swap空间
+服务器是4G的内存空间只有两个G。理论的话应该是内存的2倍，所以我需要在增加六个G给swap。
+
+这里我用虚拟机测试演示给大家看。
+
+首先先看一下当前内存。
+
+删除过期日志文件
+find /data/tomcat-8.5.8/logs -mtime +7 -name "*.log" -type f | xargs rm -rf
+find /usr -mtime +7 -name "*.log" -type f | xargs rm -rf
+find ./ -mtime +7 -name "*.log" -type f | xargs rm -rf
+
+#free -m
+1
+#free -m
+然后创建一个分区添加交换文件
+#mkdir -p /opt/swap
+#dd if=/dev/zero of=/opt/swap/swap bs=1024 count=8192000
+然后: 创建交换空间
+#mkswap /opt/swap/swap
+启动新增加的2G交换空间
+#swapon /opt/swap/swap
+查看已经可以看到新增的空间了
+#free -m
+修改/etc/fstab,使新加的2G交换空间在系统重新启动后自动生效
+#echo "/opt/swap/swap swap swap defaults 0 0" >>/etc/fstab
+到这就可以了。
+
+添加用户：useradd -d /home/aauser -m aauser
+为用户增加密码：passwd aauser
+然后录入密码
+新建工作组：groupadd aa
+将用户添加进工作组：usermod -G aa aacuser
+
+chown -R aauser:aauser /home/aauser
+chmod 760 /home/aauser
+
+
+useradd -d /data/projectuser -m projectuser
+为用户增加密码：passwd projectuser
+然后录入密码
+新建工作组：groupadd projectgroup
+将用户添加进工作组：usermod -G projectgroup projectuser
+
+chown -R projectuser:projectuser /data/projectuser
+
+useradd -d /data/wikiuser -m wikiuser
+为用户增加密码：passwd wikiuser
+然后录入密码
+新建工作组： groupadd wikigroup
+将用户添加进工作组：usermod -G wikigroup wikiuser
+
+chown -R wikiuser:wikiuser /data/wikiuser
+
+curl登陆
+curl -H "Content-Type:application/x-www-form-urlencoded" -X POST -d "opr=pwdLogin&userName=name&pwd=passwd&rememberPwd=0&lang=chs" http://10.1.1.1/login.php
+
+查看service状态
+ systemctl status xrdp
+
+
+
+安装xrdp 
+tar -zxvf xrdp-0.9.9.tar.gz
+cd xrdp-0.9.9/
+./bootstrap
+./configure
+会提示各种依赖包确实，执行安装后重新执行.
+yum install pam-devel libX11-devel libXfixes-devel nasm libXrandr-devel
+
+make
+make install
+
+.yum install -y xrdp tigervnc-server
+2.开启 vnc服务：默认端口5901
+    vncserver :1   
+
+3.xrdp 服务xrdp 默认端口3389，和windows远程桌面一致
+
+systemctl daemon-reload
+systemctl restart xrdp
+   
+   登录窗口选择xvnc模式，
+   
+调整磁盘空间
+centos7
+lvreduce -L 300G /dev/vdb1   减少至 300G
+resize2fs /dev/vdb1            //执行调整
+
+替换文件内字符串
+sed i 's/9301/8080/g' /data/jenkins_ci/workspace/src/main/resources/application.yml
+
+---------------------------
+安装dart-sdk
+官网上提示app开发到flutter网站去下载，实际上没有。找到如下网址可以下载。
+http://dart.goodev.org/install
+下载zip，解压后在PATH上添加...\dart-sdk\bin
+执行dart --version，查询安装是否成功
+
+安装flutter
+下载地址https://flutter.dev/docs/development/tools/sdk/archive#windows 
+下载zip，解压后在PATH上添加...\flutter\bin
+
+全局变量设置代理
+http_proxy = http://username:passwd@proxy.com.cn:80
+https_proxy = https://username:passwd@proxy.com.cn:80
+
+设置镜像全局变量，注意交大镜像只能用于linux
+PUB_HOSTED_URL=https://pub.flutter-io.cn
+FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+futter create project_name
+cd project_name
+flutter run --enable-software-rendering -d all
+物理机直接run即可，虚拟机需要加后面的参数
+
+也可在AS等IDE中创建项目
+
+
+cd /d D:\Program Files\Nox\bin
+nox_adb connect 127.0.0.1:62001
+nox_adb devices
+cd /d D:\dev\Android\platform-tools
+adb connect 127.0.0.1:62001
+adb devices
+
+------------------------------
+python
+centos7
+安装python前需安装依赖包
+yum -y groupinstall development
+yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tcl tk tkinter tk-devel
+#install 出现_ctypes缺失，安装
+yum install libffi-devel -y  
+
+
+安装python，3.7在centos上安装tensorflow异常，所以降级到3.5.6.
+
+wget https://www.python.org/ftp/python/3.5.6/Python-3.5.6.tar.xz
+xz -d Python-3.5.6.tar.xz
+tar -xvf Python-3.5.6.tar
+cd Python-3.5.6
+./configure --prefix=/usr/local/python3.5 --enable-optimizations
+make
+make install
+
+ln -s /usr/local/python3.5/bin/python3 /usr/bin/python3
+ln -s /usr/local/python3.5/bin/pip3 /usr/bin/pip3
+
+
+
+pip更换源
+mkdir ~/.pip 
+vi ~/.pip/pip.conf
+
+[global]
+timeout = 6000
+index-url = http://mirrors.my.com/pypi/simple
+trusted-host = mirrors.my.com
+
+
+pip3 install -i http://mirrors.my.com/pypi/simple --trusted-host mirrors.my.com --upgrade tensorflow
+pip3 install --upgrade tensorflow
+
+异常
+No module named '_tkinter'
+编译python前，需要安装tk相关库
+
+1、Could not find a version that satisfies the requirement tensorflow 
+#pip更新
+pip3 install --upgrade pip 
+
+如果还异常，可能是pip3异常。我之前移动过pip目录。重装pip
+python3 -m pip uninstall pip setuptools
+curl https://bootstrap.pypa.io/get-pip.py | python3
+可以下载get-pip.py 然后执行
+
+pip3 install --upgrade numpy
+ 
+ 异常/lib64/libstdc++.so.6: version `CXXABI_1.3.8' not found 
+ 需要更新gcc版本
+
+ tar -xvf gcc-5.5.0.tar.bz2
+cd gcc-5.5.0
+./contrib/download_prerequisits  实际没有
+mkdir build
+cd build
+../configure --enable-checking=release --enable-languages=c,c++ --disable-multilib
+make（建议不要使用make -j来编译，虽然可以缩短编译时间，但极大可能会编译失败）
+make install
+
+缺少依赖
+yum install -y gmp-devel mpfr-devel libmpc-devel
+ 
+ 
+ The following solution worked for me on Centos 7:
+
+Upgrade gcc version to 5.x.x, and then run the followings (depending on the gcc version, you may have a different file of libstdc++.so.6.0.25):
+
+cp /usr/local/lib64/libstdc++.so.6.0.21 /lib64
+cd /lib64
+rm -rf libstdc++.so.6
+ln -s libstdc++.so.6.0.21  libstdc++.so.6
+ 
+libm.so.6: version `GLIBC_2.23' not found   此问题是glic版本低
+下载：
+在 https://ftp.gnu.org/gnu/glibc/ 里选择下载 对应版本，如：glibc-2.23.tar.gz。
+# wget https://ftp.gnu.org/gnu/glibc/glibc-2.23.tar.gz
+
+
+解压。
+#tar -zxvf glibc-2.23.tar.gz
+
+
+进入安装目录：
+# cd glibc-2.23
+
+
+创建编译安装目录：
+# mkdir build
+# cd build
+
+配置：
+# ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin
+
+
+编译安装：
+# make 
+# make install
+
+
+到这一步如果出现ls目录不能使用，则/lib64/libc.so.6未更新。
+需要重建软连接，但是先解决命令不能使用问题。
+
+
+命令恢复：
+# LD_PRELOAD=/lib64/libc-2.23.so
+
+
+设置软连接，先删除旧的：
+# rm /lib64/libc.so.6
+# ln -s /lib64/libc-2.23.so /lib64/libc.so.6
+
+
+查看glib详情，执行：
+# strings /lib64/libc.so.6 |grep GLIBC_
+
+
+误删除libc.so.6的修复
+LD_PRELOAD=/lib64/libc-2.17.so rm /lib64/libc.so.6
+LD_PRELOAD=/lib64/libc-2.17.so ln -s /lib64/libc-2.17.so /lib64/libc.so.6
+
+
+
+
+
+
+python filter
+https://plot.ly/python/fft-filters/
+https://blog.csdn.net/qq_21970857/article/details/46685923
+https://www.jianshu.com/p/d6fef0bff22e
+https://www.zhihu.com/question/267552526
+
+ploy
+https://plot.ly/python/getting-started/
+https://blog.csdn.net/kevinelstri/article/details/53000696
+https://www.cnblogs.com/wangshuo1/p/6185932.html
+
+py2 encode
+https://pycoders-weekly-chinese.readthedocs.io/en/latest/issue5/unipain.html
+https://blog.csdn.net/wangjun5159/article/details/52771277
+
+
+pip3 --proxy proxy.my.com install plotly
+
+pip3 --proxy proxy.my.com install numpy scipy matplotlib ipython jupyter pandas sympy nose
+
+vi /usr/lib/systemd/system/xrdp.service
+
+---------------------------
+git config --global core.autocrlf false
+git config --global core.safecrlf true
+git config --global core.ignorecase false
+git config --global user.name "belllee"
+git config --global user.email mymail@my.com
+ssh-keygen -t rsa -C mymail@my.com
+
+
+git config --global --list
+
+
+配置git 使其对文件名大小写敏感
+git config core.ignorecase false
+
+gerrit重命名命令
+git config --global alias.me "push origin HEAD:refs/for/master%r=mymail@my.com"
